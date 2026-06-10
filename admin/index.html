@@ -6,81 +6,125 @@
   <title>Order Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../assets/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/admin.css">
 </head>
-<body>
-  <main class="page">
-    <div class="topbar">
-      <div class="brand">Order Status Admin</div>
-      <div class="nav-actions">
-        <a href="../" class="small-button secondary-button" style="text-decoration:none;">View tracking page</a>
-        <button id="logoutButton" class="secondary-button small-button" style="display:none;" onclick="adminLogout()">Logout</button>
+<body class="admin-page">
+  <main class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">Order Status Admin</div>
+      <button class="new-shipment-button" onclick="startNewShipment()">+ New Shipment</button>
+      <div class="sidebar-section-title">Saved Shipments</div>
+      <div id="sidebarShipments" class="sidebar-shipments">
+        <p class="small">Login to view shipments.</p>
       </div>
-    </div>
+    </aside>
 
-    <section class="shell">
-      <div class="panel">
-        <div class="admin-header">
-          <div>
-            <span class="eyebrow">Shipment Control</span>
-            <h1>Admin dashboard</h1>
-            <p class="muted">Manage shipments, bulk update phones, edit entries, delete mistakes, and track status history.</p>
-          </div>
+    <section class="admin-main">
+      <div class="topbar">
+        <div class="brand">Shipment Control</div>
+        <div class="nav-actions">
+          <a href="../" class="small-button secondary-button" style="text-decoration:none;">View Tracking Page</a>
+          <button id="logoutButton" class="secondary-button small-button" style="display:none;" onclick="adminLogout()">Logout</button>
         </div>
+      </div>
 
-        <div id="loginPanel" class="login-card">
-          <div class="card-core">
-            <h2>Login</h2>
-            <input type="text" id="adminUsername" placeholder="Admin username" autocomplete="username" />
-            <input type="password" id="adminPassword" placeholder="Admin password" autocomplete="current-password" />
-            <button onclick="adminLogin()">Login</button>
-            <div class="version">Admin dashboard v3</div>
-          </div>
+      <div id="loginPanel" class="login-card">
+        <div class="card-core">
+          <span class="eyebrow">Little Things</span>
+          <h1>Admin Login</h1>
+          <p class="muted">Sign in to manage shipment batches and customer order statuses.</p>
+          <input type="text" id="adminUsername" placeholder="Admin username" autocomplete="username" />
+          <input type="password" id="adminPassword" placeholder="Admin password" autocomplete="current-password" />
+          <button onclick="adminLogin()">Login</button>
+          <div class="version">Admin dashboard v4</div>
         </div>
+      </div>
 
-        <div id="adminForm" class="work-card" style="display:none;">
-          <div class="card-core">
-            <div id="dashboard" class="dashboard"></div>
+      <div id="adminForm" style="display:none;">
+        <section class="overview-card">
+          <span class="eyebrow">Little Things</span>
+          <div class="overview-copy">
+            <h1>Admin Dashboard</h1>
+            <p class="muted">Manage shipments, update phone numbers, edit status messages, and track all orders.</p>
+          </div>
+          <div id="dashboard" class="dashboard"></div>
+        </section>
+
+        <section class="workspace-grid">
+          <div class="update-panel">
+            <div class="section-header">
+              <h2>Update Shipment</h2>
+              <span id="activeStatusBadge" class="status-badge status-default">New</span>
+            </div>
 
             <p class="small">Choose an existing shipment to update all its phones, or type a new shipment name and add phone numbers.</p>
 
             <div class="form-grid">
-              <select id="shipmentSelect" onchange="selectShipment()">
-                <option value="">New shipment</option>
-              </select>
-              <input type="text" id="shipmentName" placeholder="Shipment name" />
+              <label>
+                Shipment
+                <select id="shipmentSelect" onchange="selectShipment()">
+                  <option value="">New shipment</option>
+                </select>
+              </label>
+
+              <label>
+                Shipment Name
+                <input type="text" id="shipmentName" placeholder="Shipment name" />
+              </label>
             </div>
 
-            <input type="text" id="adminSearch" placeholder="Search shipment, phone, status, or message" oninput="applyAdminFilter()" />
-            <textarea id="bulkPhones" rows="7" placeholder="017xxxxxxxx&#10;018xxxxxxxx&#10;019xxxxxxxx"></textarea>
+            <label>
+              Phone Numbers
+              <textarea id="bulkPhones" rows="7" placeholder="017xxxxxxxx&#10;018xxxxxxxx&#10;019xxxxxxxx"></textarea>
+            </label>
 
             <div class="form-grid">
-              <select id="status">
-                <option value="Processing in China">Processing in China</option>
-                <option value="Shipped from China">Shipped from China</option>
-                <option value="Arrived in Bangladesh">Arrived in Bangladesh</option>
-                <option value="Ready for Delivery">Ready for Delivery</option>
-                <option value="Delivered">Delivered</option>
-                <option value="Delayed">Delayed</option>
-              </select>
+              <label>
+                Status
+                <select id="status" onchange="syncActiveStatusBadge()">
+                  <option value="Processing in China">Processing in China</option>
+                  <option value="Shipped from China">Shipped from China</option>
+                  <option value="Arrived in Bangladesh">Arrived in Bangladesh</option>
+                  <option value="Ready for Delivery">Ready for Delivery</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Delayed">Delayed</option>
+                </select>
+              </label>
 
-              <select id="messageTemplate" onchange="applyMessageTemplate()">
-                <option value="">Message template</option>
-                <option value="Your order is currently being processed in China. We will update again soon.">Processing in China update</option>
-                <option value="Your parcel has shipped from China and is on the way.">Shipped from China update</option>
-                <option value="Your parcel has arrived in Bangladesh and is waiting for the next update.">Arrived in Bangladesh update</option>
-                <option value="Your order is ready for delivery. Our delivery team will contact you soon.">Ready for Delivery update</option>
-                <option value="Your order has been delivered successfully. Thank you.">Delivered update</option>
-                <option value="Your shipment is delayed. We are following up and will update soon.">Delay update</option>
-              </select>
+              <label>
+                Message Template
+                <select id="messageTemplate" onchange="applyMessageTemplate()">
+                  <option value="">Message template</option>
+                  <option value="Your order is currently being processed in China. We will update again soon.">Processing in China update</option>
+                  <option value="Your parcel has shipped from China and is on the way.">Shipped from China update</option>
+                  <option value="Your parcel has arrived in Bangladesh and is waiting for the next update.">Arrived in Bangladesh update</option>
+                  <option value="Your order is ready for delivery. Our delivery team will contact you soon.">Ready for Delivery update</option>
+                  <option value="Your order has been delivered successfully. Thank you.">Delivered update</option>
+                  <option value="Your shipment is delayed. We are following up and will update soon.">Delay update</option>
+                </select>
+              </label>
             </div>
 
-            <textarea id="message" rows="4" placeholder="Write status message here"></textarea>
+            <label>
+              Status Message
+              <textarea id="message" rows="4" placeholder="Write status message here"></textarea>
+            </label>
+
             <button onclick="saveStatus()">Submit / Update</button>
-            <div id="submittedOrders" class="submitted-orders"></div>
           </div>
-        </div>
+
+          <div class="activity-panel">
+            <h2>Recent Activity</h2>
+            <div id="recentActivity" class="recent-activity">
+              <p class="small">No activity loaded yet.</p>
+            </div>
+          </div>
+        </section>
+
+        <input type="text" id="adminSearch" class="admin-search" placeholder="Search shipment, phone, status, or message" oninput="applyAdminFilter()" />
+        <section id="submittedOrders" class="submitted-orders"></section>
       </div>
     </section>
   </main>
@@ -146,6 +190,16 @@
     function renderStatusBadge(status) {
       const displayStatus = getDisplayStatus(status);
       return `<span class="status-badge ${getStatusClass(displayStatus)}">${escapeHtml(displayStatus)}</span>`;
+    }
+
+    function syncActiveStatusBadge() {
+      const status = document.getElementById("status")?.value || "New";
+      const activeStatusBadge = document.getElementById("activeStatusBadge");
+
+      if (!activeStatusBadge) return;
+
+      activeStatusBadge.className = `status-badge ${getStatusClass(status)}`;
+      activeStatusBadge.textContent = getDisplayStatus(status);
     }
 
     function groupByShipment(rows) {
@@ -215,6 +269,17 @@
       document.getElementById("bulkPhones").placeholder = shipmentSelect.value
         ? "Leave empty to update all phone numbers in this shipment"
         : "017xxxxxxxx\n018xxxxxxxx\n019xxxxxxxx";
+      syncActiveStatusBadge();
+    }
+
+    function startNewShipment() {
+      document.getElementById("shipmentSelect").value = "";
+      document.getElementById("shipmentName").value = "";
+      document.getElementById("bulkPhones").value = "";
+      document.getElementById("message").value = "";
+      currentEditPhone = "";
+      selectShipment();
+      document.getElementById("shipmentName").focus();
     }
 
     function applyMessageTemplate() {
@@ -249,9 +314,60 @@
       ];
 
       dashboard.innerHTML = stats.map(([label, value]) => `
-        <div class="stat-card">
+        <div class="stat-card ${getStatusClass(label)}">
           <span class="stat-value">${escapeHtml(value)}</span>
           <span class="stat-label">${escapeHtml(label)}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderShipmentSidebar(rows) {
+      const sidebarShipments = document.getElementById("sidebarShipments");
+      const groups = groupByShipment(rows);
+      const shipments = Object.keys(groups)
+        .filter(name => name !== "No shipment")
+        .sort((a, b) => a.localeCompare(b));
+
+      if (!shipments.length) {
+        sidebarShipments.innerHTML = `<p class="small">No saved shipments yet.</p>`;
+        return;
+      }
+
+      sidebarShipments.innerHTML = shipments.map(shipment => {
+        const shipmentRows = groups[shipment];
+        const latest = shipmentRows
+          .slice()
+          .sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0))[0];
+
+        return `
+          <button class="sidebar-shipment" onclick="prepareShipmentUpdate('${escapeJsString(shipment)}')">
+            <span>
+              <strong>${escapeHtml(shipment)}</strong>
+              ${renderStatusBadge(latest?.status || "")}
+            </span>
+            <em>${shipmentRows.length} phones</em>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function renderRecentActivity() {
+      const recentActivity = document.getElementById("recentActivity");
+      const items = savedHistory.slice(0, 8);
+
+      if (!items.length) {
+        recentActivity.innerHTML = `<p class="small">No recent activity yet.</p>`;
+        return;
+      }
+
+      recentActivity.innerHTML = items.map(item => `
+        <div class="activity-item">
+          <span class="activity-dot"></span>
+          <div>
+            <strong>${escapeHtml(item.shipment_name || item.phone || "Order")} updated</strong>
+            <p>${renderStatusBadge(item.status)} ${escapeHtml(item.message)}</p>
+            <small>${item.created_at ? escapeHtml(new Date(item.created_at).toLocaleString()) : ""}</small>
+          </div>
         </div>
       `).join("");
     }
@@ -386,7 +502,10 @@
       savedOrders = data || [];
       updateShipmentSelect(savedOrders);
       renderDashboard(savedOrders);
+      renderShipmentSidebar(savedOrders);
+      renderRecentActivity();
       showSubmittedOrders(getFilteredOrders(), summaryText);
+      syncActiveStatusBadge();
     }
 
     function prepareShipmentUpdate(shipmentName) {
@@ -411,6 +530,7 @@
       document.getElementById("bulkPhones").value = phone;
       document.getElementById("status").value = getDisplayStatus(row.status);
       document.getElementById("message").value = row.message;
+      syncActiveStatusBadge();
       document.getElementById("message").focus();
     }
 
@@ -477,6 +597,7 @@
       document.getElementById("adminForm").style.display = "none";
       document.getElementById("logoutButton").style.display = "none";
       document.getElementById("adminPassword").value = "";
+      document.getElementById("sidebarShipments").innerHTML = `<p class="small">Login to view shipments.</p>`;
       alert("Logged out");
     }
 
@@ -543,6 +664,8 @@
     client.auth.getSession().then(({ data }) => {
       if (data.session) showLoggedInAdmin();
     });
+
+    syncActiveStatusBadge();
   </script>
 </body>
 </html>
