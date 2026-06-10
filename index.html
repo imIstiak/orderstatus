@@ -132,6 +132,11 @@
       color: #4b5563;
       line-height: 1.4;
     }
+
+    .updated-cell {
+      color: #6b7280;
+      white-space: nowrap;
+    }
   </style>
 </head>
 
@@ -202,20 +207,30 @@
         .replace(/'/g, "&#039;");
     }
 
-    function showSubmittedOrders(rows) {
+    function showSubmittedOrders(rows, summaryText = "") {
       const submittedOrders = document.getElementById("submittedOrders");
-      const savedAt = new Date().toLocaleString();
+      const summary = summaryText || `Showing ${rows.length} saved order status update${rows.length === 1 ? "" : "s"}.`;
 
       submittedOrders.style.display = "block";
+
+      if (!rows.length) {
+        submittedOrders.innerHTML = `
+          <h3>Saved Orders</h3>
+          <p class="small">No saved order statuses found yet.</p>
+        `;
+        return;
+      }
+
       submittedOrders.innerHTML = `
-        <h3>Submitted Orders</h3>
-        <p class="small">Saved ${rows.length} order status update${rows.length === 1 ? "" : "s"} at ${savedAt}.</p>
+        <h3>Saved Orders</h3>
+        <p class="small">${escapeHtml(summary)}</p>
         <table class="orders-table">
           <thead>
             <tr>
               <th>Phone</th>
               <th>Status</th>
               <th>Message</th>
+              <th>Updated</th>
             </tr>
           </thead>
           <tbody>
@@ -224,11 +239,38 @@
                 <td>${escapeHtml(row.phone)}</td>
                 <td><strong>${escapeHtml(row.status)}</strong></td>
                 <td class="message-cell">${escapeHtml(row.message)}</td>
+                <td class="updated-cell">${row.updated_at ? escapeHtml(new Date(row.updated_at).toLocaleString()) : "-"}</td>
               </tr>
             `).join("")}
           </tbody>
         </table>
       `;
+    }
+
+    async function loadSavedOrders(summaryText = "") {
+      const submittedOrders = document.getElementById("submittedOrders");
+      submittedOrders.style.display = "block";
+      submittedOrders.innerHTML = `
+        <h3>Saved Orders</h3>
+        <p class="small">Loading saved order statuses...</p>
+      `;
+
+      const { data, error } = await client
+        .from("order_statuses")
+        .select("phone,status,message,updated_at")
+        .order("updated_at", { ascending: false })
+        .limit(100);
+
+      if (error) {
+        console.log(error);
+        submittedOrders.innerHTML = `
+          <h3>Saved Orders</h3>
+          <p class="small">Could not load saved orders. Please check Supabase select policy for logged-in admins.</p>
+        `;
+        return;
+      }
+
+      showSubmittedOrders(data || [], summaryText);
     }
 
     function showAdmin() {
@@ -293,6 +335,7 @@
       }
 
       document.getElementById("adminForm").style.display = "block";
+      loadSavedOrders();
       alert("Admin logged in");
     }
 
@@ -329,7 +372,7 @@
       }
 
       alert("Status updated successfully");
-      showSubmittedOrders(rows);
+      loadSavedOrders(`Saved ${rows.length} order status update${rows.length === 1 ? "" : "s"} successfully.`);
       document.getElementById("bulkPhones").value = "";
       document.getElementById("message").value = "";
     }
