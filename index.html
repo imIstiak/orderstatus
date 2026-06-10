@@ -863,6 +863,7 @@
 
     async function saveStatus() {
       const phonesText = document.getElementById("bulkPhones").value;
+      const selectedShipment = document.getElementById("shipmentSelect").value;
       const shipmentName = document.getElementById("shipmentName").value.trim();
       const status = document.getElementById("status").value;
       const message = document.getElementById("message").value;
@@ -883,8 +884,9 @@
         .filter(p => p.length > 0);
 
       if (!phones.length) {
+        const sourceShipment = selectedShipment || shipmentName;
         phones = savedOrders
-          .filter(row => getShipmentName(row) === shipmentName)
+          .filter(row => getShipmentName(row) === sourceShipment)
           .map(row => row.phone);
       }
 
