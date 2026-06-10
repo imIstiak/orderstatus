@@ -67,39 +67,37 @@
         {
           key: "confirmed",
           title: "Order Confirmed",
-          text: "Your order has been received successfully."
+          text: ""
         },
         {
           key: "payment",
           title: "Payment Confirmed",
-          text: "Your payment has been verified."
+          text: ""
         },
         {
           key: "processing",
           title: normalizedStatus === "delayed" ? "Delayed" : "Processing in China",
-          text: normalizedStatus === "delayed"
-            ? message || "Your shipment is delayed. We will update you soon."
-            : "Your order is being prepared for shipment."
+          text: ""
         },
         {
           key: "shipped",
           title: "Shipped from China",
-          text: "Your parcel has left China and is on the way."
+          text: ""
         },
         {
           key: "bangladesh",
           title: "Arrived in Bangladesh",
-          text: "Your parcel has arrived in Bangladesh and is waiting for the next update."
+          text: ""
         },
         {
           key: "ready",
           title: "Ready for Delivery",
-          text: "Our delivery team will contact you soon."
+          text: ""
         },
         {
           key: "delivered",
           title: "Delivered",
-          text: "Your order has been delivered successfully."
+          text: ""
         }
       ];
 
@@ -167,7 +165,7 @@
               <div class="timeline-marker">${step.state === "done" ? "&#10003;" : step.number}</div>
               <div class="timeline-content">
                 <h3>${escapeHtml(step.title)}</h3>
-                <p>${escapeHtml(step.text)}</p>
+                ${step.text ? `<p>${escapeHtml(step.text)}</p>` : ""}
               </div>
             </div>
           `).join("")}
