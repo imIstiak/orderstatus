@@ -9,12 +9,12 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f5f7fb;
+      background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 45%, #fff7ed 100%);
       color: #111827;
     }
 
     .container {
-      max-width: 650px;
+      max-width: 860px;
       margin: 80px auto;
       padding: 25px;
       background: white;
@@ -52,6 +52,17 @@
 
     button:hover {
       background: #115e59;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-grid input,
+    .form-grid select {
+      margin-top: 0;
     }
 
     .result {
@@ -128,6 +139,64 @@
       color: #374151;
     }
 
+    .shipment-card {
+      margin-top: 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .shipment-card summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px;
+      cursor: pointer;
+      background: #f8fafc;
+      font-weight: 700;
+    }
+
+    .shipment-meta {
+      color: #6b7280;
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status-processing {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .status-delayed {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .status-bd-custom {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-delivered {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .status-default {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
     .message-cell {
       color: #4b5563;
       line-height: 1.4;
@@ -136,6 +205,22 @@
     .updated-cell {
       color: #6b7280;
       white-space: nowrap;
+    }
+
+    @media (max-width: 720px) {
+      .container {
+        margin: 24px 12px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .orders-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
     }
   </style>
 </head>
@@ -161,7 +246,15 @@
       <div class="version">Admin login v2</div>
 
       <div id="adminForm" style="display:none;">
-        <p class="small">Add phone numbers one per line.</p>
+        <p class="small">Choose an existing shipment to update all its phones, or type a new shipment name and add phone numbers.</p>
+
+        <div class="form-grid">
+          <select id="shipmentSelect" onchange="selectShipment()">
+            <option value="">New shipment</option>
+          </select>
+
+          <input type="text" id="shipmentName" placeholder="Shipment name" />
+        </div>
 
         <textarea id="bulkPhones" rows="7" placeholder="017xxxxxxxx&#10;018xxxxxxxx&#10;019xxxxxxxx"></textarea>
 
@@ -189,7 +282,8 @@
     const ADMIN_USERS = {
       admin: "admin@order-status.local"
     };
-    const APP_VERSION = "admin-login-v2";
+    const APP_VERSION = "shipment-admin-v1";
+    let savedOrders = [];
 
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     console.log(APP_VERSION);
@@ -199,7 +293,7 @@
     }
 
     function escapeHtml(value) {
-      return value
+      return String(value || "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
@@ -207,9 +301,62 @@
         .replace(/'/g, "&#039;");
     }
 
+    function getShipmentName(row) {
+      return row.shipment_name || "No shipment";
+    }
+
+    function getStatusClass(status) {
+      const key = String(status || "").toLowerCase().replace(/\s+/g, "-");
+      if (key === "processing") return "status-processing";
+      if (key === "delayed") return "status-delayed";
+      if (key === "bd-custom") return "status-bd-custom";
+      if (key === "delivered") return "status-delivered";
+      return "status-default";
+    }
+
+    function renderStatusBadge(status) {
+      return `<span class="status-badge ${getStatusClass(status)}">${escapeHtml(status)}</span>`;
+    }
+
+    function groupByShipment(rows) {
+      return rows.reduce((groups, row) => {
+        const shipment = getShipmentName(row);
+        if (!groups[shipment]) groups[shipment] = [];
+        groups[shipment].push(row);
+        return groups;
+      }, {});
+    }
+
+    function updateShipmentSelect(rows) {
+      const shipmentSelect = document.getElementById("shipmentSelect");
+      const currentValue = shipmentSelect.value;
+      const shipments = [...new Set(rows.map(getShipmentName))]
+        .filter(name => name !== "No shipment")
+        .sort((a, b) => a.localeCompare(b));
+
+      shipmentSelect.innerHTML = `
+        <option value="">New shipment</option>
+        ${shipments.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("")}
+      `;
+
+      if (shipments.includes(currentValue)) {
+        shipmentSelect.value = currentValue;
+      }
+    }
+
+    function selectShipment() {
+      const shipmentSelect = document.getElementById("shipmentSelect");
+      document.getElementById("shipmentName").value = shipmentSelect.value;
+      document.getElementById("bulkPhones").placeholder = shipmentSelect.value
+        ? "Leave empty to update all phone numbers in this shipment"
+        : "017xxxxxxxx\n018xxxxxxxx\n019xxxxxxxx";
+    }
+
     function showSubmittedOrders(rows, summaryText = "") {
       const submittedOrders = document.getElementById("submittedOrders");
       const summary = summaryText || `Showing ${rows.length} saved order status update${rows.length === 1 ? "" : "s"}.`;
+      const groups = groupByShipment(rows);
+      const shipments = Object.keys(groups).sort((a, b) => a.localeCompare(b));
 
       submittedOrders.style.display = "block";
 
@@ -224,26 +371,43 @@
       submittedOrders.innerHTML = `
         <h3>Saved Orders</h3>
         <p class="small">${escapeHtml(summary)}</p>
-        <table class="orders-table">
-          <thead>
-            <tr>
-              <th>Phone</th>
-              <th>Status</th>
-              <th>Message</th>
-              <th>Updated</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map(row => `
-              <tr>
-                <td>${escapeHtml(row.phone)}</td>
-                <td><strong>${escapeHtml(row.status)}</strong></td>
-                <td class="message-cell">${escapeHtml(row.message)}</td>
-                <td class="updated-cell">${row.updated_at ? escapeHtml(new Date(row.updated_at).toLocaleString()) : "-"}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
+        ${shipments.map((shipment, index) => {
+          const shipmentRows = groups[shipment];
+          const latestUpdate = shipmentRows
+            .map(row => row.updated_at)
+            .filter(Boolean)
+            .sort()
+            .pop();
+
+          return `
+            <details class="shipment-card" ${index === 0 ? "open" : ""}>
+              <summary>
+                <span>${escapeHtml(shipment)}</span>
+                <span class="shipment-meta">${shipmentRows.length} phones${latestUpdate ? ` | Updated ${escapeHtml(new Date(latestUpdate).toLocaleString())}` : ""}</span>
+              </summary>
+              <table class="orders-table">
+                <thead>
+                  <tr>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Message</th>
+                    <th>Updated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${shipmentRows.map(row => `
+                    <tr>
+                      <td>${escapeHtml(row.phone)}</td>
+                      <td>${renderStatusBadge(row.status)}</td>
+                      <td class="message-cell">${escapeHtml(row.message)}</td>
+                      <td class="updated-cell">${row.updated_at ? escapeHtml(new Date(row.updated_at).toLocaleString()) : "-"}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </details>
+          `;
+        }).join("")}
       `;
     }
 
@@ -257,20 +421,22 @@
 
       const { data, error } = await client
         .from("order_statuses")
-        .select("phone,status,message,updated_at")
+        .select("phone,status,message,updated_at,shipment_name")
         .order("updated_at", { ascending: false })
-        .limit(100);
+        .limit(500);
 
       if (error) {
         console.log(error);
         submittedOrders.innerHTML = `
           <h3>Saved Orders</h3>
-          <p class="small">Could not load saved orders. Please check Supabase select policy for logged-in admins.</p>
+          <p class="small">Could not load saved orders. Please add shipment_name column and check Supabase select policy for logged-in admins.</p>
         `;
         return;
       }
 
-      showSubmittedOrders(data || [], summaryText);
+      savedOrders = data || [];
+      updateShipmentSelect(savedOrders);
+      showSubmittedOrders(savedOrders, summaryText);
     }
 
     function showAdmin() {
@@ -303,7 +469,8 @@
       const order = data[0];
 
       resultBox.innerHTML = `
-        <div class="status">${order.status}</div>
+        <div class="status">${renderStatusBadge(order.status)}</div>
+        ${order.shipment_name ? `<p><strong>Shipment:</strong> ${escapeHtml(order.shipment_name)}</p>` : ""}
         <p>${order.message}</p>
         <small>Last updated: ${new Date(order.updated_at).toLocaleString()}</small>
       `;
@@ -341,21 +508,39 @@
 
     async function saveStatus() {
       const phonesText = document.getElementById("bulkPhones").value;
+      const shipmentName = document.getElementById("shipmentName").value.trim();
       const status = document.getElementById("status").value;
       const message = document.getElementById("message").value;
 
-      if (!phonesText || !message) {
-        alert("Please add phone numbers and message");
+      if (!shipmentName) {
+        alert("Please add shipment name");
         return;
       }
 
-      const phones = phonesText
+      if (!message) {
+        alert("Please add message");
+        return;
+      }
+
+      let phones = phonesText
         .split(/\n|,/)
         .map(p => cleanPhone(p))
         .filter(p => p.length > 0);
 
+      if (!phones.length) {
+        phones = savedOrders
+          .filter(row => getShipmentName(row) === shipmentName)
+          .map(row => row.phone);
+      }
+
+      if (!phones.length) {
+        alert("Please add phone numbers for this new shipment");
+        return;
+      }
+
       const rows = phones.map(phone => ({
         phone,
+        shipment_name: shipmentName,
         status,
         message,
         updated_at: new Date().toISOString()
@@ -372,7 +557,7 @@
       }
 
       alert("Status updated successfully");
-      loadSavedOrders(`Saved ${rows.length} order status update${rows.length === 1 ? "" : "s"} successfully.`);
+      loadSavedOrders(`Updated ${rows.length} phone number${rows.length === 1 ? "" : "s"} in ${shipmentName}.`);
       document.getElementById("bulkPhones").value = "";
       document.getElementById("message").value = "";
     }
