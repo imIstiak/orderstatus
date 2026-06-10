@@ -113,11 +113,19 @@
 
 .current-status {
   border-radius: 22px;
-  background: linear-gradient(135deg, #2f63e6 0%, #60a5fa 100%);
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
   padding: 24px 22px;
   color: #ffffff;
-  box-shadow: 0 18px 36px rgba(47, 99, 230, 0.2);
+  box-shadow: 0 18px 36px rgba(124, 58, 237, 0.2);
 }
+
+.current-status.status-delivered { background: linear-gradient(135deg, #14532d 0%, #15803d 100%); box-shadow: 0 18px 36px rgba(20, 83, 45, 0.22); }
+.current-status.status-delayed { background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%); box-shadow: 0 18px 36px rgba(185, 28, 28, 0.22); }
+.current-status.status-processing { background: linear-gradient(135deg, #6d28d9 0%, #a855f7 100%); box-shadow: 0 18px 36px rgba(109, 40, 217, 0.22); }
+.current-status.status-shipped { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); box-shadow: 0 18px 36px rgba(2, 132, 199, 0.22); }
+.current-status.status-bangladesh,
+.current-status.status-bd-custom { background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%); box-shadow: 0 18px 36px rgba(8, 145, 178, 0.22); }
+.current-status.status-ready { background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); box-shadow: 0 18px 36px rgba(217, 119, 6, 0.22); }
 
 .current-status span {
   display: block;
@@ -186,10 +194,18 @@
 }
 
 .timeline-row.current .timeline-marker {
-  background: #2f63e6;
+  background: #7c3aed;
   color: #ffffff;
-  box-shadow: 0 0 0 6px #dbeafe;
+  box-shadow: 0 0 0 6px #ede9fe;
 }
+
+.timeline-row.current.status-delivered .timeline-marker { background: #14532d; box-shadow: 0 0 0 6px #dcfce7; }
+.timeline-row.current.status-delayed .timeline-marker { background: #dc2626; box-shadow: 0 0 0 6px #fee2e2; }
+.timeline-row.current.status-processing .timeline-marker { background: #7c3aed; box-shadow: 0 0 0 6px #ede9fe; }
+.timeline-row.current.status-shipped .timeline-marker { background: #0284c7; box-shadow: 0 0 0 6px #e0f2fe; }
+.timeline-row.current.status-bangladesh .timeline-marker,
+.timeline-row.current.status-bd-custom .timeline-marker { background: #0891b2; box-shadow: 0 0 0 6px #cffafe; }
+.timeline-row.current.status-ready .timeline-marker { background: #d97706; box-shadow: 0 0 0 6px #fef3c7; }
 
 .timeline-content {
   border-radius: 18px;
@@ -199,9 +215,17 @@
 }
 
 .timeline-row.current .timeline-content {
-  background: #eff6ff;
-  outline-color: #bfdbfe;
+  background: #f5f3ff;
+  outline-color: #c4b5fd;
 }
+
+.timeline-row.current.status-delivered .timeline-content { background: #f0fdf4; outline-color: #86efac; }
+.timeline-row.current.status-delayed .timeline-content { background: #fef2f2; outline-color: #fecaca; }
+.timeline-row.current.status-processing .timeline-content { background: #f5f3ff; outline-color: #c4b5fd; }
+.timeline-row.current.status-shipped .timeline-content { background: #f0f9ff; outline-color: #bae6fd; }
+.timeline-row.current.status-bangladesh .timeline-content,
+.timeline-row.current.status-bd-custom .timeline-content { background: #ecfeff; outline-color: #a5f3fc; }
+.timeline-row.current.status-ready .timeline-content { background: #fffbeb; outline-color: #fde68a; }
 
 .timeline-content h3 {
   margin: 0 0 6px;

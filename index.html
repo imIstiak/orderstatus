@@ -47,7 +47,10 @@
 
     function getStatusClass(status) {
       const key = String(status || "").toLowerCase().replace(/\s+/g, "-");
-      if (key === "processing") return "status-processing";
+      if (key === "processing" || key === "processing-in-china") return "status-processing";
+      if (key === "shipped-from-china") return "status-shipped";
+      if (key === "arrived-in-bangladesh") return "status-bangladesh";
+      if (key === "ready-for-delivery") return "status-ready";
       if (key === "delayed") return "status-delayed";
       if (key === "bd-custom") return "status-bd-custom";
       if (key === "delivered") return "status-delivered";
@@ -73,36 +76,55 @@
         },
         {
           key: "processing",
-          title: normalizedStatus === "delayed" ? "Shipment Delayed" : "Processing in China",
+          title: normalizedStatus === "delayed" ? "Delayed" : "Processing in China",
           text: normalizedStatus === "delayed"
             ? message || "Your shipment is delayed. We will update you soon."
             : "Your order is being prepared for shipment."
         },
         {
-          key: "customs",
-          title: "Arrived in BD Customs",
-          text: "Your parcel will be updated once it reaches Bangladesh."
+          key: "shipped",
+          title: "Shipped from China",
+          text: "Your parcel has left China and is on the way."
         },
         {
-          key: "delivery",
+          key: "bangladesh",
+          title: "Arrived in Bangladesh",
+          text: "Your parcel has arrived in Bangladesh and is waiting for the next update."
+        },
+        {
+          key: "ready",
           title: "Ready for Delivery",
           text: "Our delivery team will contact you soon."
+        },
+        {
+          key: "delivered",
+          title: "Delivered",
+          text: "Your order has been delivered successfully."
         }
       ];
 
       let currentIndex = 2;
 
-      if (normalizedStatus.includes("custom")) {
+      if (normalizedStatus.includes("ship")) {
         currentIndex = 3;
       }
 
-      if (normalizedStatus.includes("deliver")) {
+      if (normalizedStatus.includes("custom") || normalizedStatus.includes("bangladesh")) {
         currentIndex = 4;
+      }
+
+      if (normalizedStatus.includes("ready")) {
+        currentIndex = 5;
+      }
+
+      if (normalizedStatus === "delivered" || normalizedStatus.includes("delivered")) {
+        currentIndex = 6;
       }
 
       return steps.map((step, index) => ({
         ...step,
         number: index + 1,
+        colorClass: getStatusClass(step.title),
         state: index < currentIndex ? "done" : index === currentIndex ? "current" : "upcoming"
       }));
     }
@@ -110,16 +132,24 @@
     function getCurrentTitle(status) {
       const normalizedStatus = String(status || "").toLowerCase();
 
-      if (normalizedStatus.includes("custom")) {
-        return "Arrived in BD Customs";
-      }
-
-      if (normalizedStatus.includes("deliver")) {
+      if (normalizedStatus.includes("ready")) {
         return "Ready for Delivery";
       }
 
+      if (normalizedStatus === "delivered" || normalizedStatus.includes("delivered")) {
+        return "Delivered";
+      }
+
+      if (normalizedStatus.includes("custom") || normalizedStatus.includes("bangladesh")) {
+        return "Arrived in Bangladesh";
+      }
+
+      if (normalizedStatus.includes("ship")) {
+        return "Shipped from China";
+      }
+
       if (normalizedStatus === "delayed") {
-        return "Shipment Delayed";
+        return "Delayed";
       }
 
       return "Processing in China";
@@ -129,7 +159,7 @@
       return `
         <div class="timeline">
           ${getTrackingSteps(status, message).map(step => `
-            <div class="timeline-row ${step.state}">
+            <div class="timeline-row ${step.state} ${step.colorClass}">
               <div class="timeline-marker">${step.state === "done" ? "✓" : step.number}</div>
               <div class="timeline-content">
                 <h3>${escapeHtml(step.title)}</h3>
@@ -167,7 +197,7 @@
       const order = data[0];
 
       resultBox.innerHTML = `
-        <div class="current-status">
+        <div class="current-status ${getStatusClass(getCurrentTitle(order.status))}">
           <span>Current Status</span>
           <strong>${escapeHtml(getCurrentTitle(order.status))}</strong>
         </div>
