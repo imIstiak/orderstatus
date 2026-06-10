@@ -139,6 +139,7 @@
     let savedOrders = [];
     let savedHistory = [];
     let currentEditPhone = "";
+    let activeShipmentFilter = "";
 
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -213,9 +214,13 @@
 
     function getFilteredOrders() {
       const query = document.getElementById("adminSearch").value.trim().toLowerCase();
-      if (!query) return savedOrders;
+      const shipmentRows = activeShipmentFilter
+        ? savedOrders.filter(row => getShipmentName(row) === activeShipmentFilter)
+        : savedOrders;
 
-      return savedOrders.filter(row => {
+      if (!query) return shipmentRows;
+
+      return shipmentRows.filter(row => {
         return [row.phone, row.status, row.message, getShipmentName(row)]
           .some(value => String(value || "").toLowerCase().includes(query));
       });
@@ -273,12 +278,17 @@
     }
 
     function startNewShipment() {
+      activeShipmentFilter = "";
       document.getElementById("shipmentSelect").value = "";
       document.getElementById("shipmentName").value = "";
       document.getElementById("bulkPhones").value = "";
       document.getElementById("message").value = "";
+      document.getElementById("adminSearch").value = "";
       currentEditPhone = "";
       selectShipment();
+      renderShipmentSidebar(savedOrders);
+      renderRecentActivity();
+      showSubmittedOrders(getFilteredOrders(), "Showing all saved order status updates.");
       document.getElementById("shipmentName").focus();
     }
 
@@ -340,7 +350,7 @@
           .sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0))[0];
 
         return `
-          <button class="sidebar-shipment" onclick="prepareShipmentUpdate('${escapeJsString(shipment)}')">
+          <button class="sidebar-shipment ${activeShipmentFilter === shipment ? "active" : ""}" onclick="prepareShipmentUpdate('${escapeJsString(shipment)}')">
             <span>
               <strong>${escapeHtml(shipment)}</strong>
               ${renderStatusBadge(latest?.status || "")}
@@ -353,7 +363,10 @@
 
     function renderRecentActivity() {
       const recentActivity = document.getElementById("recentActivity");
-      const items = savedHistory.slice(0, 8);
+      const items = (activeShipmentFilter
+        ? savedHistory.filter(item => (item.shipment_name || "") === activeShipmentFilter)
+        : savedHistory
+      ).slice(0, 8);
 
       if (!items.length) {
         recentActivity.innerHTML = `<p class="small">No recent activity yet.</p>`;
@@ -374,7 +387,11 @@
 
     function showSubmittedOrders(rows, summaryText = "") {
       const submittedOrders = document.getElementById("submittedOrders");
-      const summary = summaryText || `Showing ${rows.length} saved order status update${rows.length === 1 ? "" : "s"}.`;
+      const summary = summaryText || (
+        activeShipmentFilter
+          ? `Showing ${rows.length} phone number${rows.length === 1 ? "" : "s"} in ${activeShipmentFilter}.`
+          : `Showing ${rows.length} saved order status update${rows.length === 1 ? "" : "s"}.`
+      );
       const groups = groupByShipment(rows);
       const shipments = Object.keys(groups).sort((a, b) => a.localeCompare(b));
 
@@ -509,11 +526,15 @@
     }
 
     function prepareShipmentUpdate(shipmentName) {
+      activeShipmentFilter = shipmentName;
       document.getElementById("shipmentSelect").value = shipmentName;
       document.getElementById("shipmentName").value = shipmentName;
       document.getElementById("bulkPhones").value = "";
       currentEditPhone = "";
       selectShipment();
+      renderShipmentSidebar(savedOrders);
+      renderRecentActivity();
+      showSubmittedOrders(getFilteredOrders(), `Showing details for ${shipmentName}.`);
       document.getElementById("message").focus();
     }
 
