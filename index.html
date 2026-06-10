@@ -106,7 +106,7 @@
     <div id="adminPanel">
       <h2>Admin Panel</h2>
 
-      <input type="email" id="adminEmail" placeholder="Admin email" />
+      <input type="text" id="adminUsername" placeholder="Admin username" autocomplete="username" />
       <input type="password" id="adminPassword" placeholder="Admin password" />
       <button onclick="adminLogin()">Login</button>
 
@@ -132,8 +132,11 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    const SUPABASE_URL = "https://qisjoiwrpeejhjjwgajo.supabase.co/rest/v1/";
+    const SUPABASE_URL = "https://qisjoiwrpeejhjjwgajo.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_nIrPT8RaYL4ZFeuar9jfrw__Qxl3HQ2";
+    const ADMIN_USERS = {
+      admin: "admin@order-status.local"
+    };
 
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -178,8 +181,14 @@
     }
 
     async function adminLogin() {
-      const email = document.getElementById("adminEmail").value;
+      const username = document.getElementById("adminUsername").value.trim().toLowerCase();
       const password = document.getElementById("adminPassword").value;
+      const email = ADMIN_USERS[username];
+
+      if (!email) {
+        alert("Unknown admin username");
+        return;
+      }
 
       const { error } = await client.auth.signInWithPassword({
         email,
@@ -187,7 +196,8 @@
       });
 
       if (error) {
-        alert("Wrong admin login");
+        console.log(error);
+        alert(error.message || "Wrong admin login");
         return;
       }
 
