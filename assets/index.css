@@ -1,0 +1,147 @@
+.tracking-page {
+  min-height: 100vh;
+  background: #eef4fb;
+}
+
+.tracking-page::before {
+  display: none;
+}
+
+.tracking-page .page {
+  width: min(100%, 1180px);
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 40px 18px;
+}
+
+.tracking-card {
+  width: min(100%, 520px);
+  border-radius: 24px;
+  background: #ffffff;
+  padding: 46px 34px 44px;
+  text-align: center;
+  box-shadow: 0 30px 90px rgba(25, 55, 110, 0.12);
+}
+
+.tracking-page .eyebrow {
+  display: inline-flex;
+  width: auto;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.tracking-page h1 {
+  margin: 22px 0 12px;
+  color: #0f172a;
+  font-size: clamp(31px, 5vw, 36px);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+}
+
+.tracking-page .lead {
+  max-width: none;
+  margin: 0;
+  color: #53637c;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.search-box {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  margin-top: 34px;
+  padding: 8px;
+  border-radius: 18px;
+  background: #fbfdff;
+  outline: 1px solid #dfe7f2;
+}
+
+.tracking-page input {
+  min-width: 0;
+  border-radius: 14px;
+  background: transparent;
+  padding: 15px 18px;
+  color: #0f172a;
+  outline: none;
+  transform: none;
+}
+
+.tracking-page input:focus {
+  background: transparent;
+  outline: none;
+  transform: none;
+}
+
+.tracking-page input::placeholder {
+  color: #98a3b5;
+}
+
+.tracking-page button {
+  width: auto;
+  min-width: 100px;
+  margin: 0;
+  border-radius: 15px;
+  background: #2f63e6;
+  padding: 15px 23px;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.tracking-page button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(47, 99, 230, 0.22);
+}
+
+.result {
+  display: none;
+  margin-top: 20px;
+  border-radius: 18px;
+  background: #f8fbff;
+  padding: 18px;
+  text-align: left;
+  outline: 1px solid #dfe7f2;
+}
+
+.message {
+  margin: 14px 0 8px;
+  color: #172033;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.meta,
+.history-list {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.history-list {
+  margin: 14px 0 0;
+  padding-left: 18px;
+  line-height: 1.8;
+}
+
+@media (max-width: 560px) {
+  .tracking-card {
+    padding: 34px 18px;
+    border-radius: 22px;
+  }
+
+  .search-box {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .tracking-page button {
+    width: 100%;
+  }
+}
