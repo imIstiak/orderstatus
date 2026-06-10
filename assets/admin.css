@@ -1,0 +1,247 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 10px 10px 10px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--line);
+  box-shadow: 0 20px 60px rgba(157, 23, 77, 0.12);
+}
+
+.brand {
+  color: var(--pink-950);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.panel {
+  background: rgba(255,255,255,0.9);
+  padding: clamp(22px, 4vw, 42px);
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+h1 {
+  margin: 14px 0 8px;
+  font-size: clamp(34px, 6vw, 62px);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+h2 { color: var(--pink-950); }
+
+.small, .muted {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.login-card,
+.work-card {
+  padding: 8px;
+  border-radius: 28px;
+  background: rgba(252, 231, 243, 0.72);
+}
+
+.card-core {
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 22px;
+}
+
+textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+
+.secondary-button {
+  background: #fff;
+  color: var(--pink-800);
+  outline: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.danger-button {
+  background: #dc2626;
+}
+
+.small-button {
+  width: auto;
+  margin: 0 6px 6px 0;
+  padding: 9px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-grid input,
+.form-grid select {
+  margin-top: 0;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.stat-card {
+  padding: 14px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fff, #fff7fb);
+  border: 1px solid var(--line);
+  transition: transform 300ms var(--motion), box-shadow 300ms var(--motion);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(157, 23, 77, 0.1);
+}
+
+.stat-value {
+  display: block;
+  color: var(--pink-800);
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.stat-label {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.submitted-orders {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.shipment-card {
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+  transition: box-shadow 300ms var(--motion);
+}
+
+.shipment-card:hover {
+    box-shadow: 0 10px 30px rgba(157, 23, 77, 0.1);
+}
+
+.shipment-card summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px;
+  cursor: pointer;
+  background: #fff7fb;
+  font-weight: 800;
+}
+
+.shipment-summary-main {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.shipment-meta {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.shipment-actions {
+  padding: 12px 14px 0;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 11px;
+  border-top: 1px solid rgba(157, 23, 77, 0.12);
+  text-align: left;
+  vertical-align: top;
+}
+
+.orders-table th {
+  color: var(--pink-950);
+  background: #fff;
+}
+
+.message-cell {
+  color: #4b3440;
+  line-height: 1.45;
+}
+
+.updated-cell {
+  color: var(--muted);
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.history-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.version {
+  margin-top: 10px;
+  color: #b4869d;
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .admin-header, .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .orders-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

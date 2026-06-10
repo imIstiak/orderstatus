@@ -6,365 +6,8 @@
   <title>Order Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --pink-950: #4a1029;
-      --pink-800: #9d174d;
-      --pink-600: #db2777;
-      --pink-500: #ec4899;
-      --pink-100: #fce7f3;
-      --pink-50: #fdf2f8;
-      --ink: #21111a;
-      --muted: #7b6672;
-      --line: rgba(157, 23, 77, 0.16);
-      --motion: cubic-bezier(0.32, 0.72, 0, 1);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      min-height: 100vh;
-      margin: 0;
-      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 8% 0%, rgba(236, 72, 153, 0.26), transparent 32%),
-        radial-gradient(circle at 90% 12%, rgba(251, 207, 232, 0.82), transparent 34%),
-        linear-gradient(135deg, #fff7fb 0%, #fff1f7 50%, #fdf2f8 100%);
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image: linear-gradient(rgba(74, 16, 41, 0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(74, 16, 41, 0.035) 1px, transparent 1px);
-      background-size: 42px 42px;
-      mask-image: linear-gradient(to bottom, black, transparent 82%);
-    }
-
-    .page {
-      position: relative;
-      width: min(1220px, calc(100% - 28px));
-      margin: 0 auto;
-      padding: 28px 0 48px;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
-      padding: 10px 10px 10px 18px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.72);
-      border: 1px solid var(--line);
-      box-shadow: 0 20px 60px rgba(157, 23, 77, 0.12);
-    }
-
-    .brand {
-      color: var(--pink-950);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    .nav-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .shell {
-      padding: 8px;
-      border-radius: 34px;
-      background: rgba(255, 255, 255, 0.5);
-      box-shadow: 0 30px 90px rgba(157, 23, 77, 0.16);
-    }
-
-    .panel {
-      border-radius: 28px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.9);
-      padding: clamp(22px, 4vw, 42px);
-    }
-
-    .admin-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 18px;
-      align-items: flex-start;
-      margin-bottom: 22px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: var(--pink-100);
-      color: var(--pink-800);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-
-    h1, h2, h3, p { margin-top: 0; }
-
-    h1 {
-      margin: 14px 0 8px;
-      color: var(--pink-950);
-      font-size: clamp(34px, 6vw, 62px);
-      line-height: 1;
-      letter-spacing: -0.05em;
-    }
-
-    h2 { color: var(--pink-950); }
-
-    .small, .muted {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .login-card,
-    .work-card {
-      padding: 8px;
-      border-radius: 28px;
-      background: rgba(252, 231, 243, 0.72);
-    }
-
-    .card-core {
-      border-radius: 22px;
-      border: 1px solid var(--line);
-      background: #fff;
-      padding: 22px;
-    }
-
-    input, textarea, select, button {
-      width: 100%;
-      padding: 14px 15px;
-      margin-top: 12px;
-      border: 0;
-      border-radius: 16px;
-      font: inherit;
-      box-sizing: border-box;
-    }
-
-    input, textarea, select {
-      color: var(--ink);
-      background: #fff7fb;
-      outline: 1px solid rgba(157, 23, 77, 0.14);
-      transition: outline-color 420ms var(--motion), transform 420ms var(--motion), background 420ms var(--motion);
-    }
-
-    input:focus, textarea:focus, select:focus {
-      background: #fff;
-      outline-color: rgba(219, 39, 119, 0.62);
-      transform: translateY(-1px);
-    }
-
-    textarea {
-      min-height: 130px;
-      resize: vertical;
-    }
-
-    button {
-      background: linear-gradient(135deg, var(--pink-800), var(--pink-600));
-      color: #fff;
-      cursor: pointer;
-      font-weight: 800;
-      transition: transform 500ms var(--motion), box-shadow 500ms var(--motion);
-      box-shadow: 0 18px 34px rgba(219, 39, 119, 0.22);
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 24px 44px rgba(219, 39, 119, 0.28);
-    }
-
-    .secondary-button {
-      background: #fff;
-      color: var(--pink-800);
-      outline: 1px solid var(--line);
-      box-shadow: none;
-    }
-
-    .danger-button {
-      background: #dc2626;
-    }
-
-    .small-button {
-      width: auto;
-      margin: 0 6px 6px 0;
-      padding: 9px 11px;
-      border-radius: 999px;
-      font-size: 12px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .form-grid input,
-    .form-grid select {
-      margin-top: 0;
-    }
-
-    .dashboard {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 10px;
-      margin: 18px 0;
-    }
-
-    .stat-card {
-      padding: 14px;
-      border-radius: 18px;
-      background: linear-gradient(180deg, #fff, #fff7fb);
-      border: 1px solid var(--line);
-    }
-
-    .stat-value {
-      display: block;
-      color: var(--pink-800);
-      font-size: 25px;
-      font-weight: 800;
-    }
-
-    .stat-label {
-      display: block;
-      margin-top: 2px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .submitted-orders {
-      margin-top: 22px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
-    }
-
-    .shipment-card {
-      margin-top: 14px;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    .shipment-card summary {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 15px;
-      cursor: pointer;
-      background: #fff7fb;
-      font-weight: 800;
-    }
-
-    .shipment-summary-main {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .shipment-meta {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .shipment-actions {
-      padding: 12px 14px 0;
-    }
-
-    .orders-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-
-    .orders-table th,
-    .orders-table td {
-      padding: 11px;
-      border-top: 1px solid rgba(157, 23, 77, 0.12);
-      text-align: left;
-      vertical-align: top;
-    }
-
-    .orders-table th {
-      color: var(--pink-950);
-      background: #fff;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .status-processing { background: #dbeafe; color: #1d4ed8; }
-    .status-delayed { background: #fee2e2; color: #b91c1c; }
-    .status-bd-custom { background: #fef3c7; color: #92400e; }
-    .status-delivered { background: #dcfce7; color: #15803d; }
-    .status-default { background: #f3f4f6; color: #374151; }
-
-    .message-cell {
-      color: #4b3440;
-      line-height: 1.45;
-    }
-
-    .updated-cell {
-      color: var(--muted);
-      white-space: nowrap;
-      font-size: 12px;
-    }
-
-    .history-list {
-      margin: 8px 0 0;
-      padding-left: 18px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .version {
-      margin-top: 10px;
-      color: #b4869d;
-      font-size: 12px;
-      text-align: center;
-    }
-
-    @media (max-width: 900px) {
-      .admin-header, .topbar {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .dashboard {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .orders-table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
-    }
-  </style>
+    <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/admin.css">
 </head>
 <body>
   <main class="page">
@@ -414,18 +57,22 @@
 
             <div class="form-grid">
               <select id="status">
-                <option value="Processing">Processing</option>
-                <option value="Delayed">Delayed</option>
-                <option value="BD Custom">BD Custom</option>
+                <option value="Processing in China">Processing in China</option>
+                <option value="Shipped from China">Shipped from China</option>
+                <option value="Arrived in Bangladesh">Arrived in Bangladesh</option>
+                <option value="Ready for Delivery">Ready for Delivery</option>
                 <option value="Delivered">Delivered</option>
+                <option value="Delayed">Delayed</option>
               </select>
 
               <select id="messageTemplate" onchange="applyMessageTemplate()">
                 <option value="">Message template</option>
-                <option value="Your order is processing. We will update again soon.">Processing update</option>
+                <option value="Your order is currently being processed in China. We will update again soon.">Processing in China update</option>
+                <option value="Your parcel has shipped from China and is on the way.">Shipped from China update</option>
+                <option value="Your parcel has arrived in Bangladesh and is waiting for the next update.">Arrived in Bangladesh update</option>
+                <option value="Your order is ready for delivery. Our delivery team will contact you soon.">Ready for Delivery update</option>
+                <option value="Your order has been delivered successfully. Thank you.">Delivered update</option>
                 <option value="Your shipment is delayed. We are following up and will update soon.">Delay update</option>
-                <option value="Your shipment is now in BD Custom. Delivery will continue after clearance.">BD Custom update</option>
-                <option value="Your order has been delivered. Thank you.">Delivered update</option>
               </select>
             </div>
 
@@ -472,9 +119,24 @@
       return row.shipment_name || "No shipment";
     }
 
+    function getDisplayStatus(status) {
+      const normalized = String(status || "").toLowerCase();
+      if (normalized === "processing") return "Processing in China";
+      if (normalized === "bd custom" || normalized.includes("custom")) return "Arrived in Bangladesh";
+      if (normalized.includes("bangladesh")) return "Arrived in Bangladesh";
+      if (normalized.includes("ship")) return "Shipped from China";
+      if (normalized.includes("ready")) return "Ready for Delivery";
+      if (normalized === "delivered" || normalized.includes("delivered")) return "Delivered";
+      if (normalized === "delayed") return "Delayed";
+      return status || "Unknown";
+    }
+
     function getStatusClass(status) {
       const key = String(status || "").toLowerCase().replace(/\s+/g, "-");
-      if (key === "processing") return "status-processing";
+      if (key === "processing" || key === "processing-in-china") return "status-processing";
+      if (key === "shipped-from-china") return "status-shipped";
+      if (key === "arrived-in-bangladesh") return "status-bangladesh";
+      if (key === "ready-for-delivery") return "status-ready";
       if (key === "delayed") return "status-delayed";
       if (key === "bd-custom") return "status-bd-custom";
       if (key === "delivered") return "status-delivered";
@@ -482,7 +144,8 @@
     }
 
     function renderStatusBadge(status) {
-      return `<span class="status-badge ${getStatusClass(status)}">${escapeHtml(status)}</span>`;
+      const displayStatus = getDisplayStatus(status);
+      return `<span class="status-badge ${getStatusClass(displayStatus)}">${escapeHtml(displayStatus)}</span>`;
     }
 
     function groupByShipment(rows) {
@@ -569,17 +232,20 @@
       const dashboard = document.getElementById("dashboard");
       const shipments = new Set(rows.map(getShipmentName).filter(name => name !== "No shipment"));
       const counts = rows.reduce((acc, row) => {
-        acc[row.status] = (acc[row.status] || 0) + 1;
+        const displayStatus = getDisplayStatus(row.status);
+        acc[displayStatus] = (acc[displayStatus] || 0) + 1;
         return acc;
       }, {});
 
       const stats = [
         ["Shipments", shipments.size],
         ["Phones", rows.length],
-        ["Processing", counts.Processing || 0],
+        ["Processing in China", counts["Processing in China"] || 0],
+        ["Shipped from China", counts["Shipped from China"] || 0],
+        ["Arrived in Bangladesh", counts["Arrived in Bangladesh"] || 0],
+        ["Ready for Delivery", counts["Ready for Delivery"] || 0],
+        ["Delivered", counts.Delivered || 0],
         ["Delayed", counts.Delayed || 0],
-        ["BD Custom", counts["BD Custom"] || 0],
-        ["Delivered", counts.Delivered || 0]
       ];
 
       dashboard.innerHTML = stats.map(([label, value]) => `
@@ -743,7 +409,7 @@
       document.getElementById("shipmentName").value = getShipmentName(row) === "No shipment" ? "" : getShipmentName(row);
       document.getElementById("shipmentSelect").value = getShipmentName(row) === "No shipment" ? "" : getShipmentName(row);
       document.getElementById("bulkPhones").value = phone;
-      document.getElementById("status").value = row.status;
+      document.getElementById("status").value = getDisplayStatus(row.status);
       document.getElementById("message").value = row.message;
       document.getElementById("message").focus();
     }
