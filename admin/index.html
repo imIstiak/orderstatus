@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pink-950: #4a1029;
+      --pink-800: #9d174d;
+      --pink-600: #db2777;
+      --pink-500: #ec4899;
+      --pink-100: #fce7f3;
+      --pink-50: #fdf2f8;
+      --ink: #21111a;
+      --muted: #7b6672;
+      --line: rgba(157, 23, 77, 0.16);
+      --motion: cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(236, 72, 153, 0.26), transparent 32%),
+        radial-gradient(circle at 90% 12%, rgba(251, 207, 232, 0.82), transparent 34%),
+        linear-gradient(135deg, #fff7fb 0%, #fff1f7 50%, #fdf2f8 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(74, 16, 41, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(74, 16, 41, 0.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, black, transparent 82%);
+    }
+
+    .page {
+      position: relative;
+      width: min(1220px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding: 10px 10px 10px 18px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      box-shadow: 0 20px 60px rgba(157, 23, 77, 0.12);
+    }
+
+    .brand {
+      color: var(--pink-950);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .shell {
+      padding: 8px;
+      border-radius: 34px;
+      background: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 30px 90px rgba(157, 23, 77, 0.16);
+    }
+
+    .panel {
+      border-radius: 28px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.9);
+      padding: clamp(22px, 4vw, 42px);
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--pink-100);
+      color: var(--pink-800);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin: 14px 0 8px;
+      color: var(--pink-950);
+      font-size: clamp(34px, 6vw, 62px);
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+
+    h2 { color: var(--pink-950); }
+
+    .small, .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .login-card,
+    .work-card {
+      padding: 8px;
+      border-radius: 28px;
+      background: rgba(252, 231, 243, 0.72);
+    }
+
+    .card-core {
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 22px;
+    }
+
+    input, textarea, select, button {
+      width: 100%;
+      padding: 14px 15px;
+      margin-top: 12px;
+      border: 0;
+      border-radius: 16px;
+      font: inherit;
+      box-sizing: border-box;
+    }
+
+    input, textarea, select {
+      color: var(--ink);
+      background: #fff7fb;
+      outline: 1px solid rgba(157, 23, 77, 0.14);
+      transition: outline-color 420ms var(--motion), transform 420ms var(--motion), background 420ms var(--motion);
+    }
+
+    input:focus, textarea:focus, select:focus {
+      background: #fff;
+      outline-color: rgba(219, 39, 119, 0.62);
+      transform: translateY(-1px);
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    button {
+      background: linear-gradient(135deg, var(--pink-800), var(--pink-600));
+      color: #fff;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform 500ms var(--motion), box-shadow 500ms var(--motion);
+      box-shadow: 0 18px 34px rgba(219, 39, 119, 0.22);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 24px 44px rgba(219, 39, 119, 0.28);
+    }
+
+    .secondary-button {
+      background: #fff;
+      color: var(--pink-800);
+      outline: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .danger-button {
+      background: #dc2626;
+    }
+
+    .small-button {
+      width: auto;
+      margin: 0 6px 6px 0;
+      padding: 9px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-grid input,
+    .form-grid select {
+      margin-top: 0;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .stat-card {
+      padding: 14px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fff, #fff7fb);
+      border: 1px solid var(--line);
+    }
+
+    .stat-value {
+      display: block;
+      color: var(--pink-800);
+      font-size: 25px;
+      font-weight: 800;
+    }
+
+    .stat-label {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .submitted-orders {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .shipment-card {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .shipment-card summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px;
+      cursor: pointer;
+      background: #fff7fb;
+      font-weight: 800;
+    }
+
+    .shipment-summary-main {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .shipment-meta {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .shipment-actions {
+      padding: 12px 14px 0;
+    }
+
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .orders-table th,
+    .orders-table td {
+      padding: 11px;
+      border-top: 1px solid rgba(157, 23, 77, 0.12);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .orders-table th {
+      color: var(--pink-950);
+      background: #fff;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status-processing { background: #dbeafe; color: #1d4ed8; }
+    .status-delayed { background: #fee2e2; color: #b91c1c; }
+    .status-bd-custom { background: #fef3c7; color: #92400e; }
+    .status-delivered { background: #dcfce7; color: #15803d; }
+    .status-default { background: #f3f4f6; color: #374151; }
+
+    .message-cell {
+      color: #4b3440;
+      line-height: 1.45;
+    }
+
+    .updated-cell {
+      color: var(--muted);
+      white-space: nowrap;
+      font-size: 12px;
+    }
+
+    .history-list {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .version {
+      margin-top: 10px;
+      color: #b4869d;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .admin-header, .topbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .dashboard {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .orders-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar">
+      <div class="brand">Order Status Admin</div>
+      <div class="nav-actions">
+        <a href="../" class="small-button secondary-button" style="text-decoration:none;">View tracking page</a>
+        <button id="logoutButton" class="secondary-button small-button" style="display:none;" onclick="adminLogout()">Logout</button>
+      </div>
+    </div>
+
+    <section class="shell">
+      <div class="panel">
+        <div class="admin-header">
+          <div>
+            <span class="eyebrow">Shipment Control</span>
+            <h1>Admin dashboard</h1>
+            <p class="muted">Manage shipments, bulk update phones, edit entries, delete mistakes, and track status history.</p>
+          </div>
+        </div>
+
+        <div id="loginPanel" class="login-card">
+          <div class="card-core">
+            <h2>Login</h2>
+            <input type="text" id="adminUsername" placeholder="Admin username" autocomplete="username" />
+            <input type="password" id="adminPassword" placeholder="Admin password" autocomplete="current-password" />
+            <button onclick="adminLogin()">Login</button>
+            <div class="version">Admin dashboard v3</div>
+          </div>
+        </div>
+
+        <div id="adminForm" class="work-card" style="display:none;">
+          <div class="card-core">
+            <div id="dashboard" class="dashboard"></div>
+
+            <p class="small">Choose an existing shipment to update all its phones, or type a new shipment name and add phone numbers.</p>
+
+            <div class="form-grid">
+              <select id="shipmentSelect" onchange="selectShipment()">
+                <option value="">New shipment</option>
+              </select>
+              <input type="text" id="shipmentName" placeholder="Shipment name" />
+            </div>
+
+            <input type="text" id="adminSearch" placeholder="Search shipment, phone, status, or message" oninput="applyAdminFilter()" />
+            <textarea id="bulkPhones" rows="7" placeholder="017xxxxxxxx&#10;018xxxxxxxx&#10;019xxxxxxxx"></textarea>
+
+            <div class="form-grid">
+              <select id="status">
+                <option value="Processing">Processing</option>
+                <option value="Delayed">Delayed</option>
+                <option value="BD Custom">BD Custom</option>
+                <option value="Delivered">Delivered</option>
+              </select>
+
+              <select id="messageTemplate" onchange="applyMessageTemplate()">
+                <option value="">Message template</option>
+                <option value="Your order is processing. We will update again soon.">Processing update</option>
+                <option value="Your shipment is delayed. We are following up and will update soon.">Delay update</option>
+                <option value="Your shipment is now in BD Custom. Delivery will continue after clearance.">BD Custom update</option>
+                <option value="Your order has been delivered. Thank you.">Delivered update</option>
+              </select>
+            </div>
+
+            <textarea id="message" rows="4" placeholder="Write status message here"></textarea>
+            <button onclick="saveStatus()">Submit / Update</button>
+            <div id="submittedOrders" class="submitted-orders"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://qisjoiwrpeejhjjwgajo.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_nIrPT8RaYL4ZFeuar9jfrw__Qxl3HQ2";
+    const ADMIN_USERS = {
+      admin: "admin@order-status.local"
+    };
+    let savedOrders = [];
+    let savedHistory = [];
+    let currentEditPhone = "";
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function cleanPhone(phone) {
+      return phone.replace(/\D/g, "");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeJsString(value) {
+      return String(value || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    }
+
+    function getShipmentName(row) {
+      return row.shipment_name || "No shipment";
+    }
+
+    function getStatusClass(status) {
+      const key = String(status || "").toLowerCase().replace(/\s+/g, "-");
+      if (key === "processing") return "status-processing";
+      if (key === "delayed") return "status-delayed";
+      if (key === "bd-custom") return "status-bd-custom";
+      if (key === "delivered") return "status-delivered";
+      return "status-default";
+    }
+
+    function renderStatusBadge(status) {
+      return `<span class="status-badge ${getStatusClass(status)}">${escapeHtml(status)}</span>`;
+    }
+
+    function groupByShipment(rows) {
+      return rows.reduce((groups, row) => {
+        const shipment = getShipmentName(row);
+        if (!groups[shipment]) groups[shipment] = [];
+        groups[shipment].push(row);
+        return groups;
+      }, {});
+    }
+
+    function getFilteredOrders() {
+      const query = document.getElementById("adminSearch").value.trim().toLowerCase();
+      if (!query) return savedOrders;
+
+      return savedOrders.filter(row => {
+        return [row.phone, row.status, row.message, getShipmentName(row)]
+          .some(value => String(value || "").toLowerCase().includes(query));
+      });
+    }
+
+    function getHistoryForPhone(phone) {
+      return savedHistory
+        .filter(item => item.phone === phone)
+        .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+        .slice(0, 5);
+    }
+
+    function renderHistoryList(phone) {
+      const items = getHistoryForPhone(phone);
+      if (!items.length) return "";
+
+      return `
+        <ul class="history-list">
+          ${items.map(item => `
+            <li>
+              ${renderStatusBadge(item.status)}
+              ${escapeHtml(item.message)}
+              <span class="updated-cell">${item.created_at ? escapeHtml(new Date(item.created_at).toLocaleString()) : ""}</span>
+            </li>
+          `).join("")}
+        </ul>
+      `;
+    }
+
+    function updateShipmentSelect(rows) {
+      const shipmentSelect = document.getElementById("shipmentSelect");
+      const currentValue = shipmentSelect.value;
+      const shipments = [...new Set(rows.map(getShipmentName))]
+        .filter(name => name !== "No shipment")
+        .sort((a, b) => a.localeCompare(b));
+
+      shipmentSelect.innerHTML = `
+        <option value="">New shipment</option>
+        ${shipments.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("")}
+      `;
+
+      if (shipments.includes(currentValue)) {
+        shipmentSelect.value = currentValue;
+      }
+    }
+
+    function selectShipment() {
+      const shipmentSelect = document.getElementById("shipmentSelect");
+      currentEditPhone = "";
+      document.getElementById("shipmentName").value = shipmentSelect.value;
+      document.getElementById("bulkPhones").placeholder = shipmentSelect.value
+        ? "Leave empty to update all phone numbers in this shipment"
+        : "017xxxxxxxx\n018xxxxxxxx\n019xxxxxxxx";
+    }
+
+    function applyMessageTemplate() {
+      const template = document.getElementById("messageTemplate").value;
+      if (template) {
+        document.getElementById("message").value = template;
+      }
+    }
+
+    function applyAdminFilter() {
+      showSubmittedOrders(getFilteredOrders());
+    }
+
+    function renderDashboard(rows) {
+      const dashboard = document.getElementById("dashboard");
+      const shipments = new Set(rows.map(getShipmentName).filter(name => name !== "No shipment"));
+      const counts = rows.reduce((acc, row) => {
+        acc[row.status] = (acc[row.status] || 0) + 1;
+        return acc;
+      }, {});
+
+      const stats = [
+        ["Shipments", shipments.size],
+        ["Phones", rows.length],
+        ["Processing", counts.Processing || 0],
+        ["Delayed", counts.Delayed || 0],
+        ["BD Custom", counts["BD Custom"] || 0],
+        ["Delivered", counts.Delivered || 0]
+      ];
+
+      dashboard.innerHTML = stats.map(([label, value]) => `
+        <div class="stat-card">
+          <span class="stat-value">${escapeHtml(value)}</span>
+          <span class="stat-label">${escapeHtml(label)}</span>
+        </div>
+      `).join("");
+    }
+
+    function showSubmittedOrders(rows, summaryText = "") {
+      const submittedOrders = document.getElementById("submittedOrders");
+      const summary = summaryText || `Showing ${rows.length} saved order status update${rows.length === 1 ? "" : "s"}.`;
+      const groups = groupByShipment(rows);
+      const shipments = Object.keys(groups).sort((a, b) => a.localeCompare(b));
+
+      if (!rows.length) {
+        submittedOrders.innerHTML = `
+          <h3>Saved Orders</h3>
+          <p class="small">No saved order statuses found yet.</p>
+        `;
+        return;
+      }
+
+      submittedOrders.innerHTML = `
+        <h3>Saved Orders</h3>
+        <p class="small">${escapeHtml(summary)}</p>
+        ${shipments.map((shipment, index) => {
+          const shipmentRows = groups[shipment];
+          const latestUpdate = shipmentRows.map(row => row.updated_at).filter(Boolean).sort().pop();
+
+          return `
+            <details class="shipment-card" ${index === 0 ? "open" : ""}>
+              <summary>
+                <span class="shipment-summary-main">
+                  <span>${escapeHtml(shipment)}</span>
+                  <span>${renderStatusBadge(shipmentRows[0]?.status || "")}</span>
+                </span>
+                <span class="shipment-meta">${shipmentRows.length} phones${latestUpdate ? ` | Updated ${escapeHtml(new Date(latestUpdate).toLocaleString())}` : ""}</span>
+              </summary>
+              <div class="shipment-actions">
+                <button class="secondary-button small-button" onclick="prepareShipmentUpdate('${escapeJsString(shipment)}')">Update Shipment</button>
+                <button class="danger-button small-button" onclick="deleteShipment('${escapeJsString(shipment)}')">Delete Shipment</button>
+              </div>
+              <table class="orders-table">
+                <thead>
+                  <tr>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Message</th>
+                    <th>Updated</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${shipmentRows.map(row => `
+                    <tr>
+                      <td>${escapeHtml(row.phone)}</td>
+                      <td>${renderStatusBadge(row.status)}</td>
+                      <td class="message-cell">${escapeHtml(row.message)}${renderHistoryList(row.phone)}</td>
+                      <td class="updated-cell">${row.updated_at ? escapeHtml(new Date(row.updated_at).toLocaleString()) : "-"}</td>
+                      <td>
+                        <button class="secondary-button small-button" onclick="editPhone('${escapeJsString(row.phone)}')">Edit</button>
+                        <button class="danger-button small-button" onclick="deletePhone('${escapeJsString(row.phone)}')">Delete</button>
+                      </td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </details>
+          `;
+        }).join("")}
+      `;
+    }
+
+    function showLoggedInAdmin() {
+      document.getElementById("loginPanel").style.display = "none";
+      document.getElementById("adminForm").style.display = "block";
+      document.getElementById("logoutButton").style.display = "inline-block";
+      loadSavedOrders();
+    }
+
+    async function loadStatusHistory() {
+      const { data, error } = await client
+        .from("order_status_history")
+        .select("phone,shipment_name,status,message,created_at")
+        .order("created_at", { ascending: false })
+        .limit(1000);
+
+      if (error) {
+        console.log(error);
+        savedHistory = [];
+        return;
+      }
+
+      savedHistory = data || [];
+    }
+
+    async function addStatusHistory(rows) {
+      const historyRows = rows.map(row => ({
+        phone: row.phone,
+        shipment_name: row.shipment_name,
+        status: row.status,
+        message: row.message
+      }));
+
+      const { error } = await client
+        .from("order_status_history")
+        .insert(historyRows);
+
+      if (error) console.log(error);
+    }
+
+    async function loadSavedOrders(summaryText = "") {
+      const submittedOrders = document.getElementById("submittedOrders");
+      submittedOrders.innerHTML = `
+        <h3>Saved Orders</h3>
+        <p class="small">Loading saved order statuses...</p>
+      `;
+
+      await loadStatusHistory();
+
+      const { data, error } = await client
+        .from("order_statuses")
+        .select("phone,status,message,updated_at,shipment_name")
+        .order("updated_at", { ascending: false })
+        .limit(500);
+
+      if (error) {
+        console.log(error);
+        submittedOrders.innerHTML = `
+          <h3>Saved Orders</h3>
+          <p class="small">Could not load saved orders. Please check Supabase columns and select policy.</p>
+        `;
+        return;
+      }
+
+      savedOrders = data || [];
+      updateShipmentSelect(savedOrders);
+      renderDashboard(savedOrders);
+      showSubmittedOrders(getFilteredOrders(), summaryText);
+    }
+
+    function prepareShipmentUpdate(shipmentName) {
+      document.getElementById("shipmentSelect").value = shipmentName;
+      document.getElementById("shipmentName").value = shipmentName;
+      document.getElementById("bulkPhones").value = "";
+      currentEditPhone = "";
+      selectShipment();
+      document.getElementById("message").focus();
+    }
+
+    function editPhone(phone) {
+      const row = savedOrders.find(item => item.phone === phone);
+      if (!row) {
+        alert("Phone not found");
+        return;
+      }
+
+      currentEditPhone = phone;
+      document.getElementById("shipmentName").value = getShipmentName(row) === "No shipment" ? "" : getShipmentName(row);
+      document.getElementById("shipmentSelect").value = getShipmentName(row) === "No shipment" ? "" : getShipmentName(row);
+      document.getElementById("bulkPhones").value = phone;
+      document.getElementById("status").value = row.status;
+      document.getElementById("message").value = row.message;
+      document.getElementById("message").focus();
+    }
+
+    async function deletePhone(phone) {
+      if (!confirm(`Delete ${phone}?`)) return;
+
+      const { error } = await client
+        .from("order_statuses")
+        .delete()
+        .eq("phone", phone);
+
+      if (error) {
+        console.log(error);
+        alert("Could not delete phone");
+        return;
+      }
+
+      await loadSavedOrders(`Deleted ${phone}.`);
+    }
+
+    async function deleteShipment(shipmentName) {
+      if (!confirm(`Delete all phones in ${shipmentName}?`)) return;
+
+      const { error } = await client
+        .from("order_statuses")
+        .delete()
+        .eq("shipment_name", shipmentName);
+
+      if (error) {
+        console.log(error);
+        alert("Could not delete shipment");
+        return;
+      }
+
+      document.getElementById("shipmentName").value = "";
+      document.getElementById("shipmentSelect").value = "";
+      await loadSavedOrders(`Deleted shipment ${shipmentName}.`);
+    }
+
+    async function adminLogin() {
+      const username = document.getElementById("adminUsername").value.trim().toLowerCase();
+      const password = document.getElementById("adminPassword").value;
+      const email = ADMIN_USERS[username];
+
+      if (!email) {
+        alert("Unknown admin username");
+        return;
+      }
+
+      const { error } = await client.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        console.log(error);
+        alert(error.message || "Wrong admin login");
+        return;
+      }
+
+      showLoggedInAdmin();
+    }
+
+    async function adminLogout() {
+      await client.auth.signOut();
+      document.getElementById("loginPanel").style.display = "block";
+      document.getElementById("adminForm").style.display = "none";
+      document.getElementById("logoutButton").style.display = "none";
+      document.getElementById("adminPassword").value = "";
+      alert("Logged out");
+    }
+
+    async function saveStatus() {
+      const phonesText = document.getElementById("bulkPhones").value;
+      const selectedShipment = document.getElementById("shipmentSelect").value;
+      const shipmentName = document.getElementById("shipmentName").value.trim();
+      const status = document.getElementById("status").value;
+      const message = document.getElementById("message").value;
+
+      if (!shipmentName) {
+        alert("Please add shipment name");
+        return;
+      }
+
+      if (!message) {
+        alert("Please add message");
+        return;
+      }
+
+      let phones = phonesText
+        .split(/\n|,/)
+        .map(p => cleanPhone(p))
+        .filter(Boolean);
+
+      if (!phones.length) {
+        const sourceShipment = selectedShipment || shipmentName;
+        phones = savedOrders
+          .filter(row => getShipmentName(row) === sourceShipment)
+          .map(row => row.phone);
+      }
+
+      if (!phones.length) {
+        alert("Please add phone numbers for this new shipment");
+        return;
+      }
+
+      const rows = phones.map(phone => ({
+        phone,
+        shipment_name: shipmentName,
+        status,
+        message,
+        updated_at: new Date().toISOString()
+      }));
+
+      const { error } = await client
+        .from("order_statuses")
+        .upsert(rows, { onConflict: "phone" });
+
+      if (error) {
+        console.log(error);
+        alert("Error saving data");
+        return;
+      }
+
+      await addStatusHistory(rows);
+      currentEditPhone = "";
+      alert("Status updated successfully");
+      await loadSavedOrders(`Updated ${rows.length} phone number${rows.length === 1 ? "" : "s"} in ${shipmentName}.`);
+      document.getElementById("bulkPhones").value = "";
+      document.getElementById("message").value = "";
+    }
+
+    client.auth.getSession().then(({ data }) => {
+      if (data.session) showLoggedInAdmin();
+    });
+  </script>
+</body>
+</html>
