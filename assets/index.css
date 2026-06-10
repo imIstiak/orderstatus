@@ -230,16 +230,9 @@
   line-height: 1.6;
 }
 
-.meta,
-.history-list {
+.meta {
   color: #64748b;
   font-size: 13px;
-}
-
-.history-list {
-  margin: 14px 0 0;
-  padding-left: 18px;
-  line-height: 1.8;
 }
 
 @media (max-width: 560px) {

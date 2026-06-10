@@ -141,31 +141,6 @@
       `;
     }
 
-    async function loadCustomerHistory(phone) {
-      const { data, error } = await client
-        .from("order_status_history")
-        .select("status,message,created_at")
-        .eq("phone", phone)
-        .order("created_at", { ascending: false })
-        .limit(5);
-
-      if (error || !data || !data.length) {
-        return "";
-      }
-
-      return `
-        <ul class="history-list">
-          ${data.map(item => `
-            <li>
-              ${renderStatusBadge(item.status)}
-              ${escapeHtml(item.message)}
-              <span class="meta">${item.created_at ? escapeHtml(new Date(item.created_at).toLocaleString()) : ""}</span>
-            </li>
-          `).join("")}
-        </ul>
-      `;
-    }
-
     async function searchOrder() {
       const phone = cleanPhone(document.getElementById("searchPhone").value);
       const resultBox = document.getElementById("resultBox");
@@ -190,7 +165,6 @@
       }
 
       const order = data[0];
-      const historyHtml = await loadCustomerHistory(phone);
 
       resultBox.innerHTML = `
         <div class="current-status">
@@ -199,7 +173,6 @@
         </div>
         ${renderTimeline(order.status, order.message)}
         <div class="meta result-meta">Last updated: ${new Date(order.updated_at).toLocaleString()}</div>
-        ${historyHtml}
       `;
     }
   </script>
