@@ -121,6 +121,10 @@
         currentIndex = 6;
       }
 
+      if (message) {
+        steps[currentIndex].text = message;
+      }
+
       return steps.map((step, index) => ({
         ...step,
         number: index + 1,
