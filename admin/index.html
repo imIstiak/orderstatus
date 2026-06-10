@@ -455,6 +455,7 @@
     }
 
     function showLoggedInAdmin() {
+      document.body.classList.add("admin-logged-in");
       document.getElementById("loginPanel").style.display = "none";
       document.getElementById("adminForm").style.display = "block";
       document.getElementById("logoutButton").style.display = "inline-block";
@@ -614,6 +615,7 @@
 
     async function adminLogout() {
       await client.auth.signOut();
+      document.body.classList.remove("admin-logged-in");
       document.getElementById("loginPanel").style.display = "block";
       document.getElementById("adminForm").style.display = "none";
       document.getElementById("logoutButton").style.display = "none";

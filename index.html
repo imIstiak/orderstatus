@@ -160,7 +160,7 @@
         <div class="timeline">
           ${getTrackingSteps(status, message).map(step => `
             <div class="timeline-row ${step.state} ${step.colorClass}">
-              <div class="timeline-marker">${step.state === "done" ? "✓" : step.number}</div>
+              <div class="timeline-marker">${step.state === "done" ? "&#10003;" : step.number}</div>
               <div class="timeline-content">
                 <h3>${escapeHtml(step.title)}</h3>
                 <p>${escapeHtml(step.text)}</p>
@@ -169,6 +169,41 @@
           `).join("")}
         </div>
       `;
+    }
+
+    async function findOrderByPhone(phone) {
+      if (phone.length >= 7) {
+        const exactResult = await client.rpc("search_order_status", {
+          search_phone: phone
+        });
+
+        if (!exactResult.error && exactResult.data && exactResult.data.length > 0) {
+          return { order: exactResult.data[0], multiple: false, error: null };
+        }
+      }
+
+      if (phone.length >= 4) {
+        const { data, error } = await client
+          .from("order_statuses")
+          .select("phone,status,message,updated_at")
+          .like("phone", `%${phone}`)
+          .order("updated_at", { ascending: false })
+          .limit(2);
+
+        if (error) {
+          return { order: null, multiple: false, error };
+        }
+
+        if (data && data.length === 1) {
+          return { order: data[0], multiple: false, error: null };
+        }
+
+        if (data && data.length > 1) {
+          return { order: null, multiple: true, error: null };
+        }
+      }
+
+      return { order: null, multiple: false, error: null };
     }
 
     async function searchOrder() {
@@ -180,21 +215,25 @@
         return;
       }
 
-      const { data, error } = await client.rpc("search_order_status", {
-        search_phone: phone
-      });
+      const { order, multiple, error } = await findOrderByPhone(phone);
 
       resultBox.style.display = "block";
 
-      if (error || !data || data.length === 0) {
+      if (multiple) {
+        resultBox.innerHTML = `
+          ${renderStatusBadge("Multiple Matches")}
+          <p class="message">Please enter more digits of your phone number.</p>
+        `;
+        return;
+      }
+
+      if (error || !order) {
         resultBox.innerHTML = `
           ${renderStatusBadge("No Order Found")}
           <p class="message">Please check your phone number and try again.</p>
         `;
         return;
       }
-
-      const order = data[0];
 
       resultBox.innerHTML = `
         <div class="current-status ${getStatusClass(getCurrentTitle(order.status))}">

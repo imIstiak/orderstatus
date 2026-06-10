@@ -17,6 +17,14 @@
   min-height: 100vh;
 }
 
+.admin-page:not(.admin-logged-in) .admin-layout {
+  grid-template-columns: 1fr;
+}
+
+.admin-page:not(.admin-logged-in) .sidebar {
+  display: none;
+}
+
 .sidebar {
   position: sticky;
   top: 0;
@@ -57,7 +65,7 @@
   gap: 12px;
 }
 
-.sidebar-shipment {
+.admin-page .sidebar-shipment {
   width: 100%;
   margin: 0;
   padding: 17px;
@@ -69,14 +77,14 @@
   outline: 1px solid #e6eaf0;
 }
 
-.sidebar-shipment:hover {
+.admin-page .sidebar-shipment:hover {
   transform: translateY(-2px);
   box-shadow: 0 18px 36px rgba(47, 99, 230, 0.12);
   outline-color: rgba(47, 99, 230, 0.34);
 }
 
-.sidebar-shipment.active {
-  background: #f8fbff;
+.admin-page .sidebar-shipment.active {
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
   outline-color: rgba(47, 99, 230, 0.6);
   box-shadow: 0 18px 36px rgba(47, 99, 230, 0.12);
 }
@@ -130,6 +138,10 @@
 .admin-page button {
   background: #2f63e6;
   box-shadow: 0 16px 32px rgba(47, 99, 230, 0.2);
+}
+
+.admin-page .sidebar-shipment {
+  box-shadow: none;
 }
 
 .admin-page .secondary-button {
