@@ -88,6 +88,13 @@
       color: #6b7280;
       text-align: left;
     }
+
+    .version {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #9ca3af;
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -109,6 +116,7 @@
       <input type="text" id="adminUsername" placeholder="Admin username" autocomplete="username" />
       <input type="password" id="adminPassword" placeholder="Admin password" />
       <button onclick="adminLogin()">Login</button>
+      <div class="version">Admin login v2</div>
 
       <div id="adminForm" style="display:none;">
         <p class="small">Add phone numbers one per line.</p>
@@ -137,8 +145,10 @@
     const ADMIN_USERS = {
       admin: "admin@order-status.local"
     };
+    const APP_VERSION = "admin-login-v2";
 
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log(APP_VERSION);
 
     function cleanPhone(phone) {
       return phone.replace(/\D/g, "");
@@ -197,6 +207,10 @@
 
       if (error) {
         console.log(error);
+        if (error.message && error.message.includes("Invalid path")) {
+          alert("Old cached page loaded. Please hard refresh the page and try again.");
+          return;
+        }
         alert(error.message || "Wrong admin login");
         return;
       }
