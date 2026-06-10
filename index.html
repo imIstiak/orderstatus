@@ -58,6 +58,89 @@
       return `<span class="status-badge ${getStatusClass(status)}">${escapeHtml(status)}</span>`;
     }
 
+    function getTrackingSteps(status, message) {
+      const normalizedStatus = String(status || "").toLowerCase();
+      const steps = [
+        {
+          key: "confirmed",
+          title: "Order Confirmed",
+          text: "Your order has been received successfully."
+        },
+        {
+          key: "payment",
+          title: "Payment Confirmed",
+          text: "Your payment has been verified."
+        },
+        {
+          key: "processing",
+          title: normalizedStatus === "delayed" ? "Shipment Delayed" : "Processing in China",
+          text: normalizedStatus === "delayed"
+            ? message || "Your shipment is delayed. We will update you soon."
+            : "Your order is being prepared for shipment."
+        },
+        {
+          key: "customs",
+          title: "Arrived in BD Customs",
+          text: "Your parcel will be updated once it reaches Bangladesh."
+        },
+        {
+          key: "delivery",
+          title: "Ready for Delivery",
+          text: "Our delivery team will contact you soon."
+        }
+      ];
+
+      let currentIndex = 2;
+
+      if (normalizedStatus.includes("custom")) {
+        currentIndex = 3;
+      }
+
+      if (normalizedStatus.includes("deliver")) {
+        currentIndex = 4;
+      }
+
+      return steps.map((step, index) => ({
+        ...step,
+        number: index + 1,
+        state: index < currentIndex ? "done" : index === currentIndex ? "current" : "upcoming"
+      }));
+    }
+
+    function getCurrentTitle(status) {
+      const normalizedStatus = String(status || "").toLowerCase();
+
+      if (normalizedStatus.includes("custom")) {
+        return "Arrived in BD Customs";
+      }
+
+      if (normalizedStatus.includes("deliver")) {
+        return "Ready for Delivery";
+      }
+
+      if (normalizedStatus === "delayed") {
+        return "Shipment Delayed";
+      }
+
+      return "Processing in China";
+    }
+
+    function renderTimeline(status, message) {
+      return `
+        <div class="timeline">
+          ${getTrackingSteps(status, message).map(step => `
+            <div class="timeline-row ${step.state}">
+              <div class="timeline-marker">${step.state === "done" ? "✓" : step.number}</div>
+              <div class="timeline-content">
+                <h3>${escapeHtml(step.title)}</h3>
+                <p>${escapeHtml(step.text)}</p>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
     async function loadCustomerHistory(phone) {
       const { data, error } = await client
         .from("order_status_history")
@@ -110,9 +193,12 @@
       const historyHtml = await loadCustomerHistory(phone);
 
       resultBox.innerHTML = `
-        ${renderStatusBadge(order.status)}
-        <p class="message">${escapeHtml(order.message)}</p>
-        <div class="meta">Last updated: ${new Date(order.updated_at).toLocaleString()}</div>
+        <div class="current-status">
+          <span>Current Status</span>
+          <strong>${escapeHtml(getCurrentTitle(order.status))}</strong>
+        </div>
+        ${renderTimeline(order.status, order.message)}
+        <div class="meta result-meta">Last updated: ${new Date(order.updated_at).toLocaleString()}</div>
         ${historyHtml}
       `;
     }

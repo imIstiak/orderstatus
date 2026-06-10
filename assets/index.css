@@ -16,10 +16,10 @@
 }
 
 .tracking-card {
-  width: min(100%, 520px);
+  width: min(100%, 560px);
   border-radius: 24px;
   background: #ffffff;
-  padding: 46px 34px 44px;
+  padding: 46px 32px 40px;
   text-align: center;
   box-shadow: 0 30px 90px rgba(25, 55, 110, 0.12);
 }
@@ -103,12 +103,124 @@
 
 .result {
   display: none;
-  margin-top: 20px;
-  border-radius: 18px;
-  background: #f8fbff;
-  padding: 18px;
+  margin-top: 30px;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
   text-align: left;
-  outline: 1px solid #dfe7f2;
+  outline: none;
+}
+
+.current-status {
+  border-radius: 22px;
+  background: linear-gradient(135deg, #2f63e6 0%, #60a5fa 100%);
+  padding: 24px 22px;
+  color: #ffffff;
+  box-shadow: 0 18px 36px rgba(47, 99, 230, 0.2);
+}
+
+.current-status span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.current-status strong {
+  display: block;
+  font-size: clamp(22px, 5vw, 28px);
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+}
+
+.timeline {
+  position: relative;
+  margin-top: 26px;
+  padding-left: 56px;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 22px;
+  bottom: 34px;
+  width: 3px;
+  border-radius: 999px;
+  background: #e5eaf1;
+}
+
+.timeline-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 90px;
+  padding-bottom: 28px;
+}
+
+.timeline-row:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -56px;
+  top: -4px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: #e5eaf1;
+  color: #9aa7b8;
+  font-size: 16px;
+  font-weight: 800;
+  box-shadow: 0 0 0 6px #f8fbff;
+}
+
+.timeline-row.done .timeline-marker {
+  background: #1db95c;
+  color: #ffffff;
+  box-shadow: 0 0 0 6px #dcfce7;
+}
+
+.timeline-row.current .timeline-marker {
+  background: #2f63e6;
+  color: #ffffff;
+  box-shadow: 0 0 0 6px #dbeafe;
+}
+
+.timeline-content {
+  border-radius: 18px;
+  background: #fbfdff;
+  padding: 17px 18px;
+  outline: 1px solid #e4ebf4;
+}
+
+.timeline-row.current .timeline-content {
+  background: #eff6ff;
+  outline-color: #bfdbfe;
+}
+
+.timeline-content h3 {
+  margin: 0 0 6px;
+  color: #0f172a;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+}
+
+.timeline-content p {
+  margin: 0;
+  color: #53637c;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.result-meta {
+  display: block;
+  margin-top: 18px;
+  text-align: center;
 }
 
 .message {
@@ -143,5 +255,13 @@
 
   .tracking-page button {
     width: 100%;
+  }
+
+  .timeline {
+    padding-left: 48px;
+  }
+
+  .timeline-marker {
+    left: -48px;
   }
 }
