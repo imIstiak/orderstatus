@@ -35,7 +35,10 @@
           <span class="eyebrow">Little Things</span>
           <h1>Admin Login</h1>
           <p class="muted">Sign in to manage shipment batches and customer order statuses.</p>
-          <input type="text" id="adminUsername" placeholder="Admin username" autocomplete="username" />
+          <select id="adminUsername">
+            <option value="">Select username</option>
+            <option value="istiak">istiak</option>
+          </select>
           <input type="password" id="adminPassword" placeholder="Admin password" autocomplete="current-password" />
           <button onclick="adminLogin()">Login</button>
           <div class="version">Admin dashboard v4</div>
@@ -134,7 +137,7 @@
     const SUPABASE_URL = "https://qisjoiwrpeejhjjwgajo.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_nIrPT8RaYL4ZFeuar9jfrw__Qxl3HQ2";
     const ADMIN_USERS = {
-      admin: "admin@order-status.local"
+      istiak: "istiak@order-status.local"
     };
     let savedOrders = [];
     let savedHistory = [];
@@ -598,15 +601,14 @@
       const email = ADMIN_USERS[username];
 
       if (!email) {
-        alert("Unknown admin username");
+        alert("Please select a username");
         return;
       }
 
       const { error } = await client.auth.signInWithPassword({ email, password });
 
       if (error) {
-        console.log(error);
-        alert(error.message || "Wrong admin login");
+        alert(error.message || "Wrong password");
         return;
       }
 
